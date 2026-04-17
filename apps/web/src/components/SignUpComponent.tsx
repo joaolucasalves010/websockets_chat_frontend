@@ -3,7 +3,7 @@ import { User } from "lucide-react"
 import { Input } from "@workspace/ui/components/input"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
 
-import z, { minLength } from "zod"
+import z from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@workspace/ui/components/button"
@@ -19,15 +19,23 @@ const SignUpComponent = () => {
     confirmPassword: z.string().min(6, "A senha deve conter no mínimo 6 caracteres").max(72, "A senha deve ter no máximo 72 caracters")
   }).refine((data) => data.password === data.confirmPassword, {
     message: "As senhas não coincidem",
-    path: ["confirmPassword"], // importante pra mostrar erro no campo certo
+    path: ["confirmPassword"]
   })
 
   type formData = z.infer<typeof formSchema>
 
   const {register, handleSubmit, setValue, formState: {errors}} = useForm<formData>({resolver: zodResolver(formSchema)})
 
-  const onSubmit = (data: formData) => {
-    console.log(data)
+  const onSubmit = async (data: formData) => {
+    const res = await api.post("/users/create_user/", {
+      "username": data.username,
+      "password": data.password,
+      "phone": data.phone,
+    })
+
+    if (res.status == 200) {
+      console.log("Funcionou!")
+    }
   }
 
   return (
@@ -49,7 +57,14 @@ const SignUpComponent = () => {
         </Field>
         <Field className="w-[90%] mt-5">
           <FieldLabel htmlFor="phone">Telefone</FieldLabel>
-          <Input id="phone" className="rounded-sm shadow-lg p-4" maxLength={11} placeholder="Digite seu telefone" {...register("phone")}/>    
+          <Input id="phone" className="rounded-sm shadow-lg p-4" maxLength={11} placeholder="Digite seu telefone" {...register("phone", 
+            {
+              onChange: (e) => {
+                const cleaned_value = e.target.value.toLowerCase().replace(/[^0-9]/g,"")
+                setValue("phone", cleaned_value)
+              }
+            }
+          )}/>    
         </Field>
         <Field className="w-[90%] mt-5">
           <FieldLabel htmlFor="password">Senha</FieldLabel>
