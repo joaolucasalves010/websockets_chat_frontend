@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@workspace/ui/components/button"
 
 import { api } from "@/services/api"
+import { Link, useNavigate } from "react-router-dom"
 
 const SignUpComponent = () => {
 
@@ -24,6 +25,7 @@ const SignUpComponent = () => {
 
   type formData = z.infer<typeof formSchema>
 
+  const navigate = useNavigate()
   const {register, handleSubmit, setValue, formState: {errors}} = useForm<formData>({resolver: zodResolver(formSchema)})
 
   const onSubmit = async (data: formData) => {
@@ -34,7 +36,12 @@ const SignUpComponent = () => {
     })
 
     if (res.status == 200) {
-      console.log("Funcionou!")
+      await api.post("/login", {
+        "phone": data.phone,
+        "password": data.password
+      }, {withCredentials: true})
+
+      navigate("/")
     }
   }
 
@@ -76,6 +83,12 @@ const SignUpComponent = () => {
         </Field>
         <Button className="mt-5 w-[90%] rounded-sm cursor-pointer hover:scale-102" type="submit">Cadastrar</Button>
       </form>
+      <div className="max-w-md gap-2 items-center justify-between flex my-4">
+        <div className="bg-zinc-200 h-px w-45" />
+        <p className="text-zinc-300">ou</p>
+        <div className="bg-zinc-200 h-px w-45" />
+      </div>
+      <span>Já tem uma conta? <strong><Link to="/signin">Entrar</Link></strong></span>
     </div>
   )
 }
