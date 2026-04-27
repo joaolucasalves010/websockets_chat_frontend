@@ -6,12 +6,13 @@ import {
   SidebarGroup,
   SidebarHeader,
 } from "@workspace/ui/components/sidebar"
-import { Badge, MessageCircle, Search, Settings, Users} from "lucide-react"
+import { Badge, MessageCircle, Search, Settings, UserPlus} from "lucide-react"
 
 import { Avatar, AvatarImage } from "@workspace/ui/components/avatar"
 
 import type { User } from "@/types/User"
 import { useEffect } from "react"
+import { Link } from "react-router-dom"
 
 
 type Props = {
@@ -30,8 +31,10 @@ export function AppSidebar({friends}: Props) {
         <div className="flex justify-between">
           <h1 className="text-lg font-semibold">Mensagens</h1>
           <div className="flex gap-2 text-zinc-500">
-            <Users />
-            <Settings />
+            <UserPlus />
+            <Link to={"/edit-user"}>
+              <Settings />
+            </Link>
           </div>
         </div>
         <div className="relative mb-5 mt-4">
