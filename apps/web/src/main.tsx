@@ -4,11 +4,14 @@ import { createRoot } from "react-dom/client"
 import "@workspace/ui/globals.css"
 import { App } from "./App.tsx"
 import UserProvider from "./contexts/UserContext.tsx"
+import { BrowserRouter } from "react-router-dom"
 
 createRoot(document.getElementById("root")!).render(
-  <UserProvider>
-    <StrictMode>
-        <App />
-    </StrictMode>
-  </UserProvider>
+  <StrictMode>
+    <BrowserRouter>
+      <UserProvider>
+          <App />
+      </UserProvider>
+    </BrowserRouter>
+  </StrictMode>
 )

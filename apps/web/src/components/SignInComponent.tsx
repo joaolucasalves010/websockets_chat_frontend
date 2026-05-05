@@ -10,8 +10,11 @@ import { Button } from "@workspace/ui/components/button"
 
 import { api } from "@/services/api"
 import { Link, useNavigate } from "react-router-dom"
+import useAuth from "@/hooks/useAuth"
 
 const SignInComponent = () => {
+
+  const {getUser} = useAuth()
 
   const formSchema = z.object({
     phone: z.string().min(9, "O telefone deve ter no mínimo 9 caracteres").max(11, "O telefone deve ter no máximo 11 caracteres"),
@@ -33,9 +36,9 @@ const SignInComponent = () => {
     try {
         const res = await api.post("/login", user, {withCredentials: true})
         if (res.status == 200) {
+          getUser()
           navigate("/")
         }
-
     } catch (err: any) {
       console.log(err)
     }

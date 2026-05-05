@@ -6,15 +6,17 @@ import { SidebarProvider } from "@workspace/ui/components/sidebar"
 
 import { AppSidebar } from "@/components/app-sidebar"
 import { MessageCircle } from "lucide-react"
-import { useNavigate } from "react-router-dom"
-import useFetch from "@/hooks/useFetch"
+import useAuth from "@/hooks/useAuth"
 import { UserContext } from "@/contexts/UserContext"
+import SpinnerComponent from "@/components/SpinnerComponent"
+
+import { Toaster } from "sonner"
 
 
 const Home = () => {
   const [friends, setFriends] = useState<User[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const getUser = useFetch()
+  const {getUser, isLoading} = useAuth()
+  const {user} = useContext(UserContext)!
 
   useEffect(() => {
     const getFriends = async() => {
@@ -34,11 +36,14 @@ const Home = () => {
     getFriends()
   }, [])
 
+  if (isLoading) return <SpinnerComponent />
+
   return (
     <>
       <SidebarProvider>
         <AppSidebar friends={friends}/>
         <main className="flex justify-center items-center min-h-screen flex-1 flex-col">
+          <Toaster />
           <div className="bg-zinc-200 h-30 w-30 rounded-full flex items-center justify-center mb-5 relative">
             <div className="bg-green-400 h-4 w-4 rounded-full animate-ping absolute top-4 right-2"/>
             <div className="bg-green-400 h-4 w-4 rounded-full absolute top-4 right-2"/>
