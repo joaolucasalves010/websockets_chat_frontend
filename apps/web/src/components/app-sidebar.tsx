@@ -5,18 +5,22 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarHeader,
+  SidebarSeparator
 } from "@workspace/ui/components/sidebar"
 
 import { LogOut, MessageCircle, Search, Settings} from "lucide-react"
 import { api } from "@/services/api"
 
-import { Avatar, AvatarImage } from "@workspace/ui/components/avatar"
+import { Avatar, AvatarImage, AvatarBadge } from "@workspace/ui/components/avatar"
 
 import type { User } from "@/types/User"
-import { useEffect } from "react"
+import { useContext, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { Button } from "@workspace/ui/components/button"
+
 import AddFriendModal from "./AddFriendModal"
+import FriendRequestsModal from "./FriendRequestsModal"
+import { UserContext } from "@/contexts/UserContext"
 
 
 type Props = {
@@ -38,12 +42,15 @@ export function AppSidebar({friends}: Props) {
     console.log(friends)
   }, [friends])
 
+  const { user } = useContext(UserContext)!
+
   return (
-    <Sidebar>
-      <SidebarHeader className="p-2">
+    <Sidebar className="p-2 bg-zinc-50">
+      <SidebarHeader>
         <div className="flex justify-between">
           <h1 className="text-lg font-semibold">Mensagens</h1>
-          <div className="flex gap-2 text-zinc-500 items-center">
+          <div className="flex gap-3 text-zinc-500 items-center">
+            <FriendRequestsModal />
             <AddFriendModal />
             <Link to={"/edit-user"}>
               <Settings className="hover:scale-110 duration-300 hover:text-black"/>
@@ -56,6 +63,7 @@ export function AppSidebar({friends}: Props) {
         </div>
       </SidebarHeader>
       <SidebarContent>
+        <SidebarSeparator />
         <SidebarGroup>
           <h2 className="text-sm uppercase text-zinc-500 font-bold flex gap-1 items-center"><MessageCircle size={20}/>Conversas</h2>
         </SidebarGroup>
@@ -71,10 +79,29 @@ export function AppSidebar({friends}: Props) {
           </div> */}
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="p-2">
-        <Button className="w-10 cursor-pointer duration-300 hover:scale-110" onClick={() => logout()}>  
-          <LogOut />
-        </Button>
+      <SidebarSeparator />
+      <SidebarFooter>
+        <div className="flex justify-between">
+          <div>
+            <Avatar className="size-10 flex gap-1 items-center">
+              <AvatarImage src={`http://localhost:8000/${user?.image_url}`}/>
+              <AvatarBadge className="bg-green-600 dark:bg-green-800" />
+              <div className="flex flex-col">
+                <p className="text-[14px] font-bold">{user?.username}</p>
+                <div className="flex items-center gap-1">
+                  <div className="bg-green-500 h-1 w-1 p-1 rounded-full"/>
+                  <p className="text-[12px] text-zinc-500">Disponível</p>
+                </div>
+              </div>
+            </Avatar>
+            <div>
+
+            </div>
+          </div>
+          <Button className="w-10 cursor-pointer duration-300 hover:scale-110 bg-zinc-200 hover:text-red-500/80 hover:bg-red-500/10" onClick={() => logout()} variant="link" >  
+            <LogOut />
+          </Button>
+        </div>
       </SidebarFooter>
     </Sidebar>
   )

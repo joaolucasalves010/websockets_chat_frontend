@@ -16,7 +16,6 @@ import { Toaster } from "sonner"
 const Home = () => {
   const [friends, setFriends] = useState<User[]>([])
   const {getUser, isLoading} = useAuth()
-  const {user} = useContext(UserContext)!
 
   useEffect(() => {
     const getFriends = async() => {

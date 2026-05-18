@@ -6,7 +6,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogClose,
 } from "@workspace/ui/components/dialog"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
@@ -19,7 +18,6 @@ import { useForm } from "react-hook-form"
 import { api } from "@/services/api"
 
 import { toast } from "sonner"
-import { useState } from "react"
 
 const AddFriendModal = () => {
   const formSchema = z.object({
