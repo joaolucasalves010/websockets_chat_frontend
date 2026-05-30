@@ -14,7 +14,7 @@ import useAuth from "@/hooks/useAuth"
 
 const SignInComponent = () => {
 
-  const {getUser} = useAuth()
+  const { getUser } = useAuth()
 
   const formSchema = z.object({
     phone: z.string().min(9, "O telefone deve ter no mínimo 9 caracteres").max(11, "O telefone deve ter no máximo 11 caracteres"),
@@ -24,57 +24,82 @@ const SignInComponent = () => {
   type formData = z.infer<typeof formSchema>
 
   const navigate = useNavigate()
-  const {register, handleSubmit, setValue, formState: {errors}} = useForm<formData>({resolver: zodResolver(formSchema)})
+  const { register, handleSubmit, setValue, formState: { errors }, setError } = useForm<formData>({ resolver: zodResolver(formSchema) })
 
   const onSubmit = async (data: formData) => {
-    
     const user = {
       phone: data.phone,
       password: data.password,
     }
-    
+
     try {
-        const res = await api.post("/login", user, {withCredentials: true})
-        if (res.status == 200) {
-          getUser()
-          navigate("/")
-        }
+      const res = await api.post("/login", user, { withCredentials: true })
+      if (res.status == 200) {
+        getUser()
+        navigate("/")
+      }
     } catch (err: any) {
-      console.log(err)
+      if (err.response?.status === 401) {
+        setError('password', { message: 'Credenciais inválidas.' })
+      }
     }
   }
 
   return (
-    <div className="p-4 flex items-center justify-center flex-col w-full lg:w-md md:w-md">
+    <div className="p-6 flex items-center justify-center flex-col w-full">
       <div className="bg-zinc-800 w-10 h-10 p-2 rounded-lg flex items-center justify-center">
-        <LogIn size={25} className="text-white"/>
+        <LogIn size={25} className="text-white" />
       </div>
-      <h1 className="font-bold text-lg">Bem-vindo de volta</h1>
+      <h1 className="font-bold text-lg mt-2">Bem-vindo de volta</h1>
       <p className="text-zinc-500 text-sm">Entre com suas credenciais para continuar</p>
+
       <form className="flex flex-col items-center justify-center w-full" onSubmit={handleSubmit(onSubmit)}>
-        <Field className="w-[90%] mt-5">
+        <Field className="w-full mt-8">
           <FieldLabel htmlFor="phone">Telefone</FieldLabel>
-          <Input id="phone" className="rounded-sm shadow-lg p-4" maxLength={11} placeholder="Digite seu telefone" {...register("phone", 
-            {
+          <Input
+            id="phone"
+            className="rounded-sm shadow-lg p-4"
+            maxLength={11}
+            placeholder="Digite seu telefone"
+            {...register("phone", {
               onChange: (e) => {
-                const cleaned_value = e.target.value.toLowerCase().replace(/[^0-9]/g,"")
+                const cleaned_value = e.target.value.replace(/[^0-9]/g, "")
                 setValue("phone", cleaned_value)
               }
-            }
-          )}/>    
+            })}
+          />
+          {errors.phone && (
+            <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
+          )}
         </Field>
-        <Field className="w-[90%] mt-5">
+
+        <Field className="w-full mt-5">
           <FieldLabel htmlFor="password">Senha</FieldLabel>
-          <Input type="password" id="password" className="rounded-sm shadow-lg p-4" maxLength={72} placeholder="******" {...register("password")}/>
+          <Input
+            type="password"
+            id="password"
+            className="rounded-sm shadow-lg p-4"
+            maxLength={72}
+            placeholder="******"
+            {...register("password")}
+          />
+          {errors.password && (
+            <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+          )}
         </Field>
-        <Button className="mt-5 w-[90%] rounded-sm cursor-pointer hover:scale-102" type="submit">Entrar</Button>
+
+        <Button className="mt-5 w-full rounded-sm cursor-pointer hover:scale-[1.02]" type="submit">
+          Entrar
+        </Button>
       </form>
-      <div className="max-w-md gap-2 items-center justify-between flex my-4">
-        <div className="bg-zinc-200 h-px w-45" />
-        <p className="text-zinc-300">ou</p>
-        <div className="bg-zinc-200 h-px w-45" />
+
+      <div className="w-full gap-2 items-center justify-between flex my-4">
+        <div className="bg-zinc-200 h-px flex-1" />
+        <p className="text-zinc-300 text-sm">ou</p>
+        <div className="bg-zinc-200 h-px flex-1" />
       </div>
-      <span>Não tem uma conta? <strong><Link to="/signup">Cadastrar</Link></strong></span>
+
+      <span className="text-sm">Não tem uma conta? <strong><Link to="/signup">Cadastrar</Link></strong></span>
     </div>
   )
 }

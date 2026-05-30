@@ -8,10 +8,12 @@ import {
   SidebarSeparator
 } from "@workspace/ui/components/sidebar"
 
+import DefaultAvatar from "../assets/user.png"
+
 import { LogOut, MessageCircle, Search, Settings} from "lucide-react"
 import { api } from "@/services/api"
 
-import { Avatar, AvatarImage, AvatarBadge } from "@workspace/ui/components/avatar"
+import { Avatar, AvatarImage } from "@workspace/ui/components/avatar"
 
 import type { User } from "@/types/User"
 import { useContext, useEffect } from "react"
@@ -21,6 +23,7 @@ import { Button } from "@workspace/ui/components/button"
 import AddFriendModal from "./AddFriendModal"
 import FriendRequestsModal from "./FriendRequestsModal"
 import { UserContext } from "@/contexts/UserContext"
+import FriendList from "./FriendList"
 
 
 type Props = {
@@ -45,7 +48,7 @@ export function AppSidebar({friends}: Props) {
   const { user } = useContext(UserContext)!
 
   return (
-    <Sidebar className="p-2 bg-zinc-50">
+    <Sidebar className="p-2 bg-zinc-50 w-80">
       <SidebarHeader>
         <div className="flex justify-between">
           <h1 className="text-lg font-semibold">Mensagens</h1>
@@ -68,15 +71,7 @@ export function AppSidebar({friends}: Props) {
           <h2 className="text-sm uppercase text-zinc-500 font-bold flex gap-1 items-center"><MessageCircle size={20}/>Conversas</h2>
         </SidebarGroup>
         <SidebarGroup>
-          {/* <div className="bg-zinc-100 p-2 rounded-sm flex items-center gap-2 border border-zinc-300">
-            <Avatar className="size-12">
-              <AvatarImage src="https://github.com/joaolucasalves010.png"/>
-            </Avatar>
-            <div className="flex flex-col p-2">
-              <h1 className="text-lg font-semibold tracking-wide">João Lucas</h1>
-              <p className="text-xs">Iniciar conversa</p>
-            </div>
-          </div> */}
+          <FriendList friends={friends} />
         </SidebarGroup>
       </SidebarContent>
       <SidebarSeparator />
@@ -84,8 +79,11 @@ export function AppSidebar({friends}: Props) {
         <div className="flex justify-between">
           <div>
             <Avatar className="size-10 flex gap-1 items-center">
-              <AvatarImage src={`http://localhost:8000/${user?.image_url}`}/>
-              <AvatarBadge className="bg-green-600 dark:bg-green-800" />
+              {user?.image_url ? (
+                <AvatarImage src={`http://localhost:8000/${user?.image_url}`}/>
+              ) : (
+                <AvatarImage src={DefaultAvatar}/>
+              )}
               <div className="flex flex-col">
                 <p className="text-[14px] font-bold">{user?.username}</p>
                 <div className="flex items-center gap-1">
@@ -95,7 +93,6 @@ export function AppSidebar({friends}: Props) {
               </div>
             </Avatar>
             <div>
-
             </div>
           </div>
           <Button className="w-10 cursor-pointer duration-300 hover:scale-110 bg-zinc-200 hover:text-red-500/80 hover:bg-red-500/10" onClick={() => logout()} variant="link" >  
